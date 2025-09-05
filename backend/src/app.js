@@ -1,0 +1,31 @@
+import express from 'express';
+import dotenv from 'dotenv';
+dotenv.config()
+import cookieparser from 'cookie-parser'
+import cors from 'cors'
+
+const app = express()
+
+
+app.use(cors({
+    origin : process.env.FRONTEND_URL,
+    methods : ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials : true,
+    // optionsSuccessStatus : 200,
+}))
+
+
+// using middleeares
+
+app.use(express.json())
+app.use(express.urlencoded({extended : true}))
+app.use(cookieparser())
+
+
+// import all router here
+import authRouter from './routes/auth.router.js'
+
+
+app.use('/api/v1/auth', authRouter)
+
+export {app};
