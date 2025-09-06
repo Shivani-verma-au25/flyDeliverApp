@@ -1,5 +1,5 @@
 import {Router} from 'express'
-import { resetPassword, sendOpt, signinUser, signOutUser, signupUser, verifyOtp } from '../controllers/auth.controller.js'
+import { googleAuth, resetPassword, sendOpt, signinUser, signOutUser, signupUser, verifyOtp } from '../controllers/auth.controller.js'
 
 const router = Router()
 
@@ -12,6 +12,7 @@ router.route('/signout').post(signOutUser)
 router.route('/send-otp').post(sendOpt)
 router.route('/verify-otp').post(verifyOtp)
 router.route('/reset-password').post(resetPassword)
+router.route('/google-auth').post(googleAuth)
 
 
 router.route("/check").get((req,res) => {

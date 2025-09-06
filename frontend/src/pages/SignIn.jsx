@@ -8,6 +8,8 @@ import { Label } from '@/components/ui/label'
 import { Eye, EyeOff } from 'lucide-react'
 import { toast } from 'sonner'
 import { AxiosInstance } from '@/utils/axios'
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { auth } from '@/utils/firebase';
 
 function SignIn() {
     const [showPassword ,setShowPassword] = useState(false)
@@ -45,6 +47,28 @@ function SignIn() {
         }
     }
 
+    // google signin
+  const googleAuthHanlder = async () => {
+  const provider = new GoogleAuthProvider();
+
+  try {
+    const resp = await signInWithPopup(auth, provider);
+    const user = resp.user;
+
+  
+    const { data } = await AxiosInstance.post("/v1/auth/google-auth", {
+      email: user.email,
+    });
+
+    toast.success(data.message);
+  } catch (error) {
+    console.log("Error in googleAuthHandler", error);
+    toast.error(error.response?.data?.message || "Google sign-in failed!");
+  }
+};
+
+
+
   return (
     <div className='min-h-screen bg-gray-200 py-4 sm:py-20 flex items-center justify-center font-sans'>
         <div className='max-w-6xl bg-white rounded-xl shadow-lg border mx-4 flex flex-col md:flex-row'>
@@ -67,7 +91,9 @@ function SignIn() {
               action="" 
               className='w-full max-w-sm flex flex-col items-center gap-4 py-4 px-4 sm:px-6 shadow shadow-gray-300 rounded-lg'
             >
-              <Button variant={'ghost'} className='cursor-pointer text-sm w-full border flex items-center'>
+              <Button 
+              onClick={googleAuthHanlder}
+              variant={'ghost'} className='cursor-pointer text-sm w-full border flex items-center'>
                 <FcGoogle/>
                  Sign in with Google 
               </Button>
@@ -79,6 +105,7 @@ function SignIn() {
                   placeholder="youraccount@gmail.com" 
                   className='text-sm w-full'
                   onChange={onChangeHanlder}
+                  required
                 />
               </div>
               <div className='w-full space-y-2 relative'>
@@ -89,6 +116,7 @@ function SignIn() {
                   placeholder="********" 
                   className='text-sm w-full'
                   onChange={onChangeHanlder}
+                  required
                 />
                 <Button type='button'
                 onClick={() => setShowPassword(!showPassword)}
