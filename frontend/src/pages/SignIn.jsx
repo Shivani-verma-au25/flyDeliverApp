@@ -5,13 +5,17 @@ import { FcGoogle } from 'react-icons/fc'
 import signinpic from '@/assets/signinpic.jpg'
 import { data, Link } from 'react-router-dom'
 import { Label } from '@/components/ui/label'
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { AxiosInstance } from '@/utils/axios'
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '@/utils/firebase';
+import { useDispatch, useSelector } from 'react-redux'
+import { setLoading, setUserData } from '@/redux/userSlice'
 
 function SignIn() {
+  const dispatch = useDispatch()
+  const {loading} = useSelector((state) => state.user);
     const [showPassword ,setShowPassword] = useState(false)
     const [fomrData ,setFormData] = useState({
         email:"",
@@ -29,19 +33,20 @@ function SignIn() {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
+          dispatch(setLoading(true))
             const resp = await AxiosInstance.post('/v1/auth/signin',fomrData)
             if(resp.data?.success){
                 toast.success(resp.data?.message)
-                // todo set data in stroge
+                dispatch(setUserData(resp.data))
             }
-            
             setFormData({
                 email: '',
                 password : ''
             })
             
-            
+            dispatch(setLoading(false))
         } catch (error) {
+          dispatch(setLoading(false))
             console.log("Error in sigin page",error.message);
             toast.error(error.response?.data?.message || "Something went wrong");  
         }
@@ -61,6 +66,7 @@ function SignIn() {
     });
 
     toast.success(data.message);
+    dispatch(setUserData(data))
   } catch (error) {
     console.log("Error in googleAuthHandler", error);
     toast.error(error.response?.data?.message || "Google sign-in failed!");
@@ -123,7 +129,7 @@ function SignIn() {
                 className='absolute inset-y-5 right-0 text-gray-400 cursor-pointer' variant={'ghost'}>{ showPassword ? <Eye/> :  <EyeOff />}</Button>
               </div>
               <Link to={'/forget-password'} className='text-right w-full text-xs text-blue-500 font-semibold'>Forget password</Link>
-              <Button type='submit' className='w-full mt-4 cursor-pointer'>Sign In</Button>
+              <Button type='submit' className='w-full mt-4 cursor-pointer'> {loading ? <><Loader2 className="size-5 animate-spin transition-all duration-200 " />Loading...</> : 'Sign In' }</Button>
               <div className='flex justify-center items-center gap-1 mt-2'>
                 <p className='text-xs'>Don't have an account?</p>
                 <Link className='text-xs underline text-blue-600 font-semibold' to={'/signup'}>Signup</Link> 

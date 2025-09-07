@@ -4,17 +4,20 @@ import signuppic from "@/assets/signuppic.jpg";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader, Loader2 } from "lucide-react";
 import { AxiosInstance } from "@/utils/axios";
 import { toast } from "sonner";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { FcGoogle } from "react-icons/fc";
 import { auth } from "@/utils/firebase";
+import { useDispatch, useSelector } from "react-redux";
+import { setUserData,setLoading } from "@/redux/userSlice";
 
 function SignUp() {
   const naviaget = useNavigate();
+  const {loading} = useSelector((state) => state.user);
+  const dispatch = useDispatch()
   const roles = ["user", "owner", "deliveryPerson"];
-  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     fullname: "",
@@ -35,14 +38,14 @@ function SignUp() {
   const submitHnadler = async (e) => {
     e.preventDefault();
     try {
+      dispatch(setLoading(true))
       const resp = await AxiosInstance.post("/v1/auth/signup", formData);
       console.log(resp.data);
       if (resp.data?.success) {
         toast.success(resp.data?.message);
+        dispatch(setUserData(resp.data))
         naviaget("/signin");
-        // todo : set data into store
       }
-
       setFormData({
         fullname: "",
         email: "",
@@ -51,6 +54,7 @@ function SignUp() {
         role: "",
       });
     } catch (error) {
+      dispatch(setLoading(true))
       console.log("Error in signup", error.message);
       toast.error(error.response?.data?.message || "Something went wrong");
     }
@@ -79,6 +83,8 @@ const googleAuthHanlder = async () => {
 
     console.log("data", data);
     toast.success(data.message);
+    dispatch(setUserData(data))
+    naviaget('/signin')
   } catch (error) {
     console.log("Error in googleAuthHandler", error);
     toast.error(error.response?.data?.message || "Google sign-in failed!");
@@ -220,7 +226,7 @@ const googleAuthHanlder = async () => {
               </div>
 
               <Button type="submit" className="w-full mt-3 sm:mt-4 text-sm">
-                {loading ? "Loading..." : "Sign Up"}
+                {loading ? <><Loader2 className="size-5 animate-spin transition-all duration-200 " />Loading...</> : "Sign Up"}
               </Button>
 
               <div className="flex justify-center items-center gap-1 mt-2 text-center">
