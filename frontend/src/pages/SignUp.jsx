@@ -42,6 +42,8 @@ function SignUp() {
       const resp = await AxiosInstance.post("/v1/auth/signup", formData);
       console.log(resp.data);
       if (resp.data?.success) {
+        console.log("data signup",resp);
+        
         toast.success(resp.data?.message);
         dispatch(setUserData(resp.data))
         naviaget("/signin");

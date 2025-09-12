@@ -7,6 +7,7 @@ import { sendOtpMail } from "../utils/mail.js";
 export const signupUser = asyncHandler(async (req, res) => {
   try {
     const { fullname, email, password, mobile, role } = req.body;
+    console.log("Incoming signup body:", req.body)
 
     //check if user is already exists
     const existedUser = await User.findOne({ email });
@@ -263,7 +264,7 @@ export const resetPassword = asyncHandler(async (req, res) => {
 // google auth controller
 export const googleAuth = asyncHandler(async (req, res) => {
   try {
-    const { fullname, email, mobile } = req.body;
+    const { fullname, email, mobile ,role} = req.body;
     console.log(req.body);
 
     // if (
@@ -285,7 +286,7 @@ export const googleAuth = asyncHandler(async (req, res) => {
         fullname,
         email,
         mobile,
-        role: "user",
+        role,
       });
     }
 
