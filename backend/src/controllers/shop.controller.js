@@ -79,3 +79,24 @@ export const createShopAndEditShop = asyncHandler(async (req, res) => {
     });
   }
 });
+
+
+// get shop controller
+
+export const getShop = asyncHandler(async (req, res) => {
+  const shop = await Shop.findOne({ shopOwner: req.user._id }).populate("shopOwner items");
+
+  if (!shop) {
+    return res.status(404).json({
+      success: false,
+      message: "No shop found!",
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "Here is your shop!",
+    shop,
+  });
+});
+

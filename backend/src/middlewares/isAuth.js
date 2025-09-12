@@ -42,5 +42,5 @@ export const isAuth = asyncHandler( async (req ,res ,next) => {
             message : "Auth failed"
         })   
     }
-    next();
+    // next();
 })
