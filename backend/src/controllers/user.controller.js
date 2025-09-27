@@ -3,7 +3,6 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 export const getCurrentUser = asyncHandler( async (req, res) => {
     try {
         const user = req.user; // Assuming req.user is set by the isAuth middleware
-        console.log("current user",user);
         if(!user){
             return res.status(404).json({
                 success : false,

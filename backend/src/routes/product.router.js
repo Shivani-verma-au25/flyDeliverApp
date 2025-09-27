@@ -5,7 +5,6 @@ import {upload } from '../middlewares/multer.middleware.js'
 
 const router = Router();
 
-
 router.route('/add-product').post(isAuth ,upload.single('productImage') ,addProducts)
 router.route('/edit-product/:productId').post(isAuth ,upload.single('productImage') ,editProduct)
 

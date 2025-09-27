@@ -1,4 +1,4 @@
-import { setCity } from "@/redux/userSlice";
+import {setCurrentAddress, setCurrentCity, setCurrentState } from "@/redux/userSlice";
 import axios from "axios";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,7 +17,13 @@ function useGetCity() {
         const resp = await axios.get(
           `https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&format=json&apiKey=${import.meta.env.VITE_GEO_API_KEY}`
         );
-        dispatch(setCity(resp.data?.results[0].city))
+        dispatch(setCurrentCity(resp.data?.results[0].city))
+        dispatch(setCurrentState(resp.data?.results[0].state))
+        dispatch(setCurrentAddress(resp.data?.results[0].address_line2))
+        // console.log("state ",resp.data?.results[0].address_line2);
+        // console.log("state ",resp.data?.results[0].city);
+        // console.log("state ",resp.data?.results[0].state);
+        
       } catch (error) {
         console.error("Error fetching city:", error);
       }

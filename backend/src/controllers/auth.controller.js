@@ -7,7 +7,6 @@ import { sendOtpMail } from "../utils/mail.js";
 export const signupUser = asyncHandler(async (req, res) => {
   try {
     const { fullname, email, password, mobile, role } = req.body;
-    console.log("Incoming signup body:", req.body)
 
     //check if user is already exists
     const existedUser = await User.findOne({ email });
@@ -58,7 +57,6 @@ export const signupUser = asyncHandler(async (req, res) => {
 
     // create tokens
     const flyToken = await user.generateJwtToken();
-    console.log(flyToken, "generated token");
 
     const options = {
       httpOnly: true,

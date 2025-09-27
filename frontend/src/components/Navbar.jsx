@@ -23,8 +23,9 @@ import { toast } from "sonner";
 
 function Navbar() {
   const dispatch = useDispatch();
-  const { userData, city } = useSelector((state) => state.user);
-  console.log("user data", userData);
+  const { userData, currentCity } = useSelector((state) => state.user);
+  const { myShopData } = useSelector((state) => state.owner);
+  // console.log("user data", myShopData);
 
   const handleSignOut = async () => {
     try {
@@ -42,10 +43,10 @@ function Navbar() {
       {/*  for desktop */}
       {userData?.user?.role === "user" && (
         <div className="md:w-3/5 lg:w-[40%] h-[70%] bg-white shadow-xl rounded-lg items-center gap-2 md:flex hidden ">
-          {/* city */}
+          {/* currentCity */}
           <div className="flex items-center w-[30%] overflow-hidden gap-2 px-2 border-r-2 border-gray-400 ">
             <Navigation className="size-5 text-pink-600" />
-            <div className="w-[80%] truncate text-gray-600 ">{city}</div>
+            <div className="w-[80%] truncate text-gray-600 ">{currentCity}</div>
           </div>
           <div className="w-4/5 flex justify-between items-center gap-2 px-2">
             <SearchIcon className="size-5 text-pink-600" />
@@ -67,11 +68,11 @@ function Navbar() {
             </PopoverTrigger>
             <PopoverContent className="p-0 border-none shadow-none bg-transparent">
               <div className="w-full h-[70px] fixed top-[50px] -left-[5%] bg-white shadow-xl rounded-lg flex items-center px-1">
-                {/* city */}
+                {/* currentCity */}
                 <div className="flex items-center w-[25%] overflow-hidden gap-2 px-1 border-r-2 border-gray-400">
                   <Navigation className="size-5 text-pink-600" />
                   <div className="w-[80%] truncate text-gray-600 text-xs">
-                    {city}
+                    {currentCity}
                   </div>
                 </div>
 
@@ -107,36 +108,45 @@ function Navbar() {
 
         {userData.user?.role === "owner" ? (
           <>
-            <div className="hidden md:flex justify-baseline md:justify-center items-center">
-              <Button
-                variant={"ghost"}
-                className="cursor-pointer border border-pink-400 text-pink-600 hover:text-pink-7 text-xs md:text-sm hover:bg-pink-600/10"
-              >
-                <Plus size={10} />
-                Add Food Products
-              </Button>
-            </div>
-            <div className="flex md:hidden justify-baseline md:justify-center items-center gap-1">
-              <Button
-                variant={"ghost"}
-                className="cursor-pointer border border-pink-400 text-pink-600 hover:text-pink-7 text-xs md:text-sm hover:bg-pink-600/10"
-              >
-                <Plus size={10} />
-              </Button>
-            </div>
+            {myShopData && (
+              <>
+                <div className="hidden md:flex justify-baseline md:justify-center items-center">
+                  <Button
+                    variant={"ghost"}
+                    className="cursor-pointer border border-pink-400 text-pink-600 hover:text-pink-7 text-xs md:text-sm hover:bg-pink-600/10"
+                  >
+                    <Plus size={10} />
+                    Add Food Products
+                  </Button>
+                </div>
+                <div className="flex md:hidden justify-baseline md:justify-center items-center gap-1">
+                  <Button
+                    variant={"ghost"}
+                    className="cursor-pointer border border-pink-400 text-pink-600 hover:text-pink-7 text-xs md:text-sm hover:bg-pink-600/10"
+                  >
+                    <Plus size={10} />
+                  </Button>
+                </div>
+              </>
+            )}
             <div className="hidden md:flex justify-center items-center gap-2 cursor-pointer relative px-3 py-1 text-pink-600 font-medium text-xs md:text-sm rounded-md hover:bg-pink-500/10 border border-pink-400">
               <Receipt className="text-pink-600" />
               <span>Pending Orders</span>
-              <span className="absolute -top-3 -right-2 bg-pink-500 w-4 h-4 text-white rounded-full flex justify-center items-center">0</span>
+              <span className="absolute -top-3 -right-2 bg-pink-500 w-4 h-4 text-white rounded-full flex justify-center items-center">
+                0 
+              </span>
             </div>
 
             <div className="flex md:hidden justify-center items-center cursor-pointer relative px-2  py-1 text-pink-600 font-medium text-xs md:text-sm rounded-md hover:bg-pink-500/10 border border-pink-400">
               <Receipt className="text-pink-600" />
               <span></span>
-              <span className="absolute -top-3 -right-2 bg-pink-500 w-4 h-4 text-white rounded-full flex justify-center items-center">0</span>
+              <span className="absolute -top-3 -right-2 bg-pink-500 w-4 h-4 text-white rounded-full flex justify-center items-center">
+                0
+              </span>
             </div>
           </>
-        ) : (
+        ) 
+        : (
           <>
             <Button
               variant={"outline"}

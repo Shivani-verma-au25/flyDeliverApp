@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose";
 
 const productSchema = new Schema ({
     name : {
-        type: Strng ,
+        type: String ,
         required : true,
         trim : true
     },
@@ -12,7 +12,7 @@ const productSchema = new Schema ({
     },
     shop : {
         type :Schema.Types.ObjectId,
-        ref : Shop,
+        ref : "Shop",
         required : true
     },
     category : {

@@ -2,10 +2,12 @@ import DeliverPerson from '@/components/DeliverPerson'
 import Navbar from '@/components/Navbar'
 import OwnerDashboard from '@/components/OwnerDashboard'
 import UserDashboard from '@/components/UserDashboard'
+import useGetCurrentUser from '@/hooks/useGetCurrentUser'
 import React, { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 
 function Home() {
+    useGetCurrentUser()
         const {userData} = useSelector((state) => state.user)
 
         console.log(userData.user?.role);

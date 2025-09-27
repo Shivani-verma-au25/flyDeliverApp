@@ -9,14 +9,15 @@ import useGetCurrentUser from './hooks/useGetCurrentUser'
 import { useSelector } from 'react-redux'
 import Home from './pages/Home'
 import useGetCity from './hooks/useGetCity'
+import CreateEditShop from './pages/CreateEditShop'
 import useGetShop from './hooks/useGetShop'
 
 function App() {
   useGetCity() 
   useGetCurrentUser()
-  useGetShop()
+
   const {userData} = useSelector((state) => state.user)
-  console.log("userData",userData);
+  // console.log("userData",userData);
 
 
   
@@ -27,6 +28,7 @@ function App() {
       <Route path='/signin' element={ !userData ? <SignIn /> : <Navigate to={'/'} /> } />
       <Route path='/forget-password' element={ !userData ? <ForgetPassword /> : <Navigate  to={'/signin'}/>} />
       <Route path='/' element={ userData ? <Home /> : <Navigate to={'/signin'} />} />
+      <Route path='/create-edit-shop' element={ userData ? <CreateEditShop /> : <Navigate to={'/signin'} />} />
     </Routes>
     <Toaster/>
     </div>

@@ -1,4 +1,3 @@
-
 import mongoose, {Schema} from 'mongoose';
 
 const shopSchema = new Schema({
@@ -9,10 +8,10 @@ const shopSchema = new Schema({
     },
     shopImage : {
         type : String,
-        required : true
+        // required : true
     },
     shopOwner : {
-        type : Schema.Types.ObjectId,
+        type : mongoose.Schema.Types.ObjectId,
         req : 'User',
         required : true
     },
@@ -30,7 +29,7 @@ const shopSchema = new Schema({
     },
     items : [
         {
-            type :Schema.Types.ObjectId,
+            type :mongoose.Schema.Types.ObjectId,
             ref : "Product"
         }
     ]

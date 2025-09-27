@@ -1,7 +1,7 @@
-import { Product } from "../models/product.models.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import {uploadnCloudinary} from '../utils/cloudinnary.js'
 import {Shop} from '../models/shop.models.js'
+import { Product } from "../models/product.models.js";
 
 // create product
 export const addProducts = asyncHandler ( async (req , res) => {
@@ -44,7 +44,8 @@ export const addProducts = asyncHandler ( async (req , res) => {
 
 
         // check product is created or not
-        const createdProduct = await Product.findById(product._id).populate("shop","name shopOwner");
+        // const createdProduct = await Product.findById(product._id).populate("shop","name shopOwner");
+        const createdProduct = await Product.findById(product._id);
         if(!createdProduct){
             return res.status(404).json({
                 success : false,
@@ -115,7 +116,7 @@ export const editProduct = asyncHandler ( async (req, res) =>{
             price,
             foodType,
             productImage : image
-        }, {new : true}).populate("shop","name shopOwner");
+        }, {new : true});
 
         if (!updatedProduct) {
             return res.status(404).json({
