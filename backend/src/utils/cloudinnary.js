@@ -18,14 +18,15 @@ export const uploadnCloudinary = async (filePath) => {
         const repsonse = await cloudinary.uploader.upload(filePath , {
             resource_type : 'auto'
         })
-        fs.unlinkSync(filePath);
         console.log("uploaded file" , repsonse);
-        return repsonse.secure_url;
+        fs.unlinkSync(filePath);
+        // return repsonse.secure_url;
+        return repsonse;
         
     } catch (error) {
         fs.unlinkSync(filePath);
         console.log("Error while uplaoding file to cloudinary ", error);
-        
+        return null;
     }
 }
 

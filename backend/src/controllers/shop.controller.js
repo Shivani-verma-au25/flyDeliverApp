@@ -3,88 +3,88 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadnCloudinary } from "../utils/cloudinnary.js";
 
 // create a shop
+
 export const createShopAndEditShop = asyncHandler(async (req, res) => {
   try {
-    const { name, shopCity, state, address } = req.body;
-    // validation
-    if ([name, shopCity, state, address].some((field) => !field || field.trim() === "")) {
+    const { name, shopCity, address, state } = req.body;
+
+    if (
+      [name, shopCity, address, state].some(
+        (field) => typeof field !== "string" || field.trim() === ""
+      )
+    ) {
       return res.status(400).json({
         success: false,
-        message: "All fileds are required!",
+        message: "Fields are required!",
       });
     }
 
-    // file image
-    let image;
-    if (req.file) {
-      image = await uploadnCloudinary(req.file.path);
-    }
-
-    // check if shop already exists for the owner
-    const existedShop = await Shop.findOne({ shopOwner: req.user._id });
-    if (!existedShop) {
-      // create shop
-      const shop = await Shop.create({
-        name,
-        shopImage: image,
-        shopCity,
-        state,
-        address,
-        shopOwner: req.user._id,
-      });
-
-      // find created shop
-
-      const createdShop = await Shop.findById(shop._id).populate(
-        "shopOwner ","name"
-      );
-      // check shop is created or not
-      if (!createdShop) {
-        return res.status(402).json({
-          success: false,
-          message: "Failed to create Shop !",
-        });
+    let shopPic;
+    try {
+      if (req.file) {
+        const uploadRes = await uploadnCloudinary(req.file.path);
+        shopPic = uploadRes.secure_url; // ✅ Only save URL
       }
-
-      // send response
-
-      return res.status(201).json({
-        success: true,
-        message: `${req.user.fullname} has created the Shop Successfully!`,
-        createdShop,
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        message: "Error while uploading image!",
+        error: error.message,
       });
-    }else {
-        const shop = await Shop.findByIdAndUpdate( existedShop._id ,{
-        name,
-        shopImage: image,
-        shopCity,
-        state,
-        address,
-        shopOwner: req.user._id,
-      } ,{ new : true});
-
-      return res.status(200).json({
-        success : true ,
-        message :"Shop updated successfully!",
-        shop
-      })
-
     }
 
+    // check if shop already exists
+    const existedShop = await Shop.findOne({ shopOwner: req.user._id });
+
+    let shop;
+    if (!existedShop) {
+      // create new
+      shop = await Shop.create({
+        name,
+        shopCity,
+        address,
+        state,
+        shopImage: shopPic, // required when creating
+        shopOwner: req.user._id,
+      });
+    } else {
+      // update existing
+      shop = await Shop.findByIdAndUpdate(
+        existedShop._id,
+        {
+          name,
+          shopCity,
+          address,
+          state,
+          // only update if new image uploaded, else keep old one
+          ...(shopPic && { shopImage: shopPic }),
+        },
+        { new: true }
+      );
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: existedShop
+        ? "Shop updated successfully"
+        : "Shop created successfully",
+      shop,
+    });
   } catch (error) {
-    console.log("Error in creating shop controller ", error);
+    console.log("error while edit and update controller", error);
+
     return res.status(500).json({
       success: false,
-      message: "Failed to create shop!",
+      message: "Failed to edit and update",
+      error: error.message,
     });
   }
 });
 
-
 // get shop controller
 
 export const getShop = asyncHandler(async (req, res) => {
-  const shop = await Shop.findOne({ shopOwner: req.user._id }).populate("shopOwner items");
+  const shop = await Shop.findOne({ shopOwner: req.user._id })
 
   if (!shop) {
     return res.status(404).json({
@@ -99,4 +99,3 @@ export const getShop = asyncHandler(async (req, res) => {
     shop,
   });
 });
-
