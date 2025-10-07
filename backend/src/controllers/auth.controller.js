@@ -7,6 +7,8 @@ import { sendOtpMail } from "../utils/mail.js";
 export const signupUser = asyncHandler(async (req, res) => {
   try {
     const { fullname, email, password, mobile, role } = req.body;
+    console.log(req.body,"auth");
+    
 
     //check if user is already exists
     const existedUser = await User.findOne({ email });

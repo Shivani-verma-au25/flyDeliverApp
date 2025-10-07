@@ -11,7 +11,6 @@ function useGetShop() {
       dispatch(setLoading(true))
       try {
         const res = await AxiosInstance.get('/v1/shop/get-shop')
-          console.log("res shop",res.data);
         if (res.data?.success) {
           console.log("res shop",res.data);
           dispatch(setMyShopData(res.data.shop))
@@ -23,7 +22,7 @@ function useGetShop() {
       }
     }
     getShop()
-  },[dispatch])
+  },[])
 
 }
 

@@ -9,10 +9,18 @@ import { CornerDownLeft, Loader2, Utensils } from "lucide-react";
 import { Label } from "@radix-ui/react-label";
 import useGetShop from "@/hooks/useGetShop";
 import useGetCurrentUser from "@/hooks/useGetCurrentUser";
-
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { setLoading, setMyShopData } from "@/redux/ownerSlice";
 
-function CreateEditShop() {
+function AddItems() {
   useGetCurrentUser();
   // calling hook for data
   useGetShop();
@@ -20,40 +28,51 @@ function CreateEditShop() {
   const navigate = useNavigate();
   // getting data from redux
   const { myShopData, loading } = useSelector((state) => state.owner);
-  console.log("shop", myShopData);
-
-  // current user
-  const { currentCity, currentAddress, currentState } = useSelector(
-    (state) => state.user
-  );
-
   const dispatch = useDispatch();
-  // const [frontendImage ,setFrontendImage]= useState(myShopData?.shopImage || "")
+
+  // for images
   const [backendImage, setBackendImage] = useState(null);
+
+  // for categories
+  const [selcetCategory, setSelectCategory] = useState("");
+  const [selectFoodType, setSelectFoodType] = useState("");
+
+  // categories
+  const categories =  [
+        "Snacks",
+        "Main Courses",
+        "Desserts",
+        "Pizzas",
+        "Burgers",
+        "Sandwiches",
+        "South Indian",
+        "North Indian",
+        "Chinese",
+        "Fast Food",
+        "Others",
+      ]
+  const foodTypes = ["Veg", "Non-Veg"];
+
+  // actual fields
   const [formdata, setFormData] = useState({
-    name: myShopData?.name || "",
-    shopCity: myShopData?.shopCity || currentCity,
-    state: myShopData?.state || currentState,
-    address: myShopData?.address || currentAddress,
-    shopImage: myShopData?.shopImage || "",
+    name: "",
+    productImage: "",
+    price: "",
+    category: "",
+    foodType: "",
   });
 
   // Handle image selection
   const handleImage = (e) => {
     const file = e.target.files[0];
-    console.log("file", file);
+    console.log("file" ,file);
+    
+    if (!file) return null;
 
-    if (!file) return;
-    setBackendImage(file); // store actual File object for backend
-    setFormData({ ...formdata, shopImage: URL.createObjectURL(file) }); // for preview only
+    setBackendImage(file);
+    setFormData({...formdata, productImage : URL.createObjectURL(file)})
   };
 
-  const isValidate =
-    formdata.name &&
-    formdata.address &&
-    formdata.shopCity &&
-    formdata.shopImage &&
-    formdata.state;
   // Handle form submit
   const handleSubmitEditAndSave = async (e) => {
     dispatch(setLoading(true));
@@ -61,32 +80,41 @@ function CreateEditShop() {
     try {
       const data = new FormData();
       data.append("name", formdata.name);
-      data.append("shopCity", formdata.shopCity);
-      data.append("state", formdata.state);
-      data.append("address", formdata.address);
+      data.append("price", formdata.price);
+      data.append("category", selcetCategory);
+      data.append("foodType", selectFoodType);
 
       if (backendImage) {
-        data.append("shopImage", backendImage); // actual file upload
+        data.append("productImage", backendImage); // actual file upload
       }
 
-      const resp = await AxiosInstance.post("/v1/shop/create-edit", data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      console.log("res edit", resp.data);
+      const resp = await AxiosInstance.post("/v1/product/add-product",data,{
+        headers: { "Content-Type": "multipart/form-data" }}
+      );
 
       if (resp.data.success) {
-        dispatch(setMyShopData(resp.data?.shop));
+        console.log("product data",resp.data?.shop);
+        dispatch(setMyShopData(resp.data.shop));
         navigate("/");
+        
         toast(resp.data.message);
       }
 
       dispatch(setLoading(false));
     } catch (error) {
-      console.error("Error while edit or save the shop", error);
-      toast.error("Failed to save shop!");
+      console.error("Error while create a  product items", error);
+      // toast.error(response.data.error);
       dispatch(setLoading(false));
     }
   };
+  // validate fields
+  const isValidate =
+    formdata.name &&
+    formdata.price &&
+    backendImage &&
+    selcetCategory &&
+    selectFoodType;
+
 
   return (
     <div className="flex justify-center flex-col items-center min-h-screen bg-gradient-to-br from-pink-100 to-white p-2 sm:px-0">
@@ -102,9 +130,7 @@ function CreateEditShop() {
           <div className="bg-pink-200 p-4 rounded-xl mb-4">
             <Utensils className="size-6 font-bold" />
           </div>
-          <div className="text-3xl font-extrabold text-gray-900">
-            {myShopData ? "Edit Shop" : "Add Shop"}
-          </div>
+          <div className="text-3xl font-extrabold text-gray-900">Add food</div>
         </div>
 
         <form className="space-y-5" onSubmit={handleSubmitEditAndSave}>
@@ -113,6 +139,7 @@ function CreateEditShop() {
               Name
             </Label>
             <Input
+              name="name"
               value={formdata.name}
               onChange={(e) =>
                 setFormData({ ...formdata, name: e.target.value })
@@ -122,75 +149,90 @@ function CreateEditShop() {
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-600"
             />
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <Label className="block text-sm font-medium text-gray-700 mb-1">
-                City
-              </Label>
-              <Input
-                value={formdata.shopCity}
-                onChange={(e) =>
-                  setFormData({ ...formdata, shopCity: e.target.value })
-                }
-                type="text"
-                placeholder="Enter City"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-600"
-              />
-            </div>
-
-            <div>
-              <Label className="block text-sm font-medium text-gray-700 mb-1">
-                State
-              </Label>
-              <Input
-                value={formdata.state}
-                onChange={(e) =>
-                  setFormData({ ...formdata, state: e.target.value })
-                }
-                type="text"
-                placeholder="Enter State"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-600"
-              />
-            </div>
-          </div>
-
           <div>
             <Label className="block text-sm font-medium text-gray-700 mb-1">
-              Address
+              Price
             </Label>
             <Input
-              value={formdata.address}
+              name="price"
+              value={formdata.price}
               onChange={(e) =>
-                setFormData({ ...formdata, address: e.target.value })
+                setFormData({ ...formdata, price: e.target.value })
               }
-              type="text"
-              placeholder="Add address"
+              type="number"
+              placeholder="0"
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-600"
             />
           </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="">
+              <Label className="block text-sm font-medium text-gray-700 mb-1">
+                Category
+              </Label>
+              <Select
+                name="category"
+                value={selcetCategory}
+                onValueChange={setSelectCategory}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Category</SelectLabel>
+                    {categories.map((cat) => (
+                      <SelectItem value={cat}>{cat}</SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label className="block text-sm font-medium text-gray-700 mb-1">
+                foodType
+              </Label>
+              <Select
+                name="foodType"
+                value={selectFoodType}
+                onValueChange={setSelectFoodType}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select a fruit" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>food Type</SelectLabel>
+                    {foodTypes.map((foodtyp) => (
+                      <SelectItem value={foodtyp}>{foodtyp}</SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
           <div>
             <Label className="block text-sm font-medium text-gray-700 mb-1">
-              Shop Picture
+              Food Picture
             </Label>
             <Input
+              name="productImage"
               type="file"
               accept="image/*"
               onChange={handleImage}
               className="w-full px-4 border text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-600 cursor-pointer"
             />
-            {formdata.shopImage && (
+            {formdata.productImage && (
               <div className="mt-4">
                 <img
-                  src={formdata.shopImage}
+                  src={formdata.productImage}
                   alt={formdata.name}
                   className="w-full h-48 object-cover rounded-lg border"
                 />
               </div>
             )}
           </div>
-
           <Button
             disabled={!isValidate || loading}
             className={`w-full cursor-pointer ${
@@ -203,8 +245,6 @@ function CreateEditShop() {
                 <Loader2 className="size-4  transition-all duration-300 animate-spin " />
                 Loading...{" "}
               </span>
-            ) : myShopData ? (
-              "Update"
             ) : (
               "Save"
             )}
@@ -215,4 +255,4 @@ function CreateEditShop() {
   );
 }
 
-export default CreateEditShop;
+export default AddItems;

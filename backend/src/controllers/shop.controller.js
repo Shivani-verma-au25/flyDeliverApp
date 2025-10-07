@@ -34,7 +34,7 @@ export const createShopAndEditShop = asyncHandler(async (req, res) => {
     }
 
     // check if shop already exists
-    const existedShop = await Shop.findOne({ shopOwner: req.user._id });
+    const existedShop = await Shop.findOne({ shopOwner: req.user._id }).populate('name');
 
     let shop;
     if (!existedShop) {
@@ -60,7 +60,7 @@ export const createShopAndEditShop = asyncHandler(async (req, res) => {
           ...(shopPic && { shopImage: shopPic }),
         },
         { new: true }
-      );
+      ).populate('shopOwner items');
     }
 
     return res.status(200).json({
@@ -84,7 +84,14 @@ export const createShopAndEditShop = asyncHandler(async (req, res) => {
 // get shop controller
 
 export const getShop = asyncHandler(async (req, res) => {
-  const shop = await Shop.findOne({ shopOwner: req.user._id })
+  const shop = await Shop.findOne({ shopOwner: req.user._id }) .populate({
+      path: "items",
+      select: "name category price foodType productImage createdAt updatedAt",
+    })
+    .populate({
+      path: "shopOwner",
+      select: "fullname email mobile",
+    });
 
   if (!shop) {
     return res.status(404).json({

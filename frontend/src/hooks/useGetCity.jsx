@@ -9,7 +9,6 @@ function useGetCity() {
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(async (position) => {
-      console.log(position);
       const latitude = position.coords.latitude;
       const longitude = position.coords.longitude;
       
@@ -19,7 +18,7 @@ function useGetCity() {
         );
         dispatch(setCurrentCity(resp.data?.results[0].city))
         dispatch(setCurrentState(resp.data?.results[0].state))
-        dispatch(setCurrentAddress(resp.data?.results[0].address_line2))
+        dispatch(setCurrentAddress(resp.data?.results[0].address_line2 || resp.data?.results[0].address_line1))
         // console.log("state ",resp.data?.results[0].address_line2);
         // console.log("state ",resp.data?.results[0].city);
         // console.log("state ",resp.data?.results[0].state);

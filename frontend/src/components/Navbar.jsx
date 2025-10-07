@@ -20,9 +20,11 @@ import { PopoverClose } from "@radix-ui/react-popover";
 import { AxiosInstance } from "@/utils/axios";
 import { setUserData } from "@/redux/userSlice";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 function Navbar() {
   const dispatch = useDispatch();
+  const navigate = useNavigate()
   const { userData, currentCity } = useSelector((state) => state.user);
   const { myShopData } = useSelector((state) => state.owner);
   // console.log("user data", myShopData);
@@ -111,7 +113,8 @@ function Navbar() {
             {myShopData && (
               <>
                 <div className="hidden md:flex justify-baseline md:justify-center items-center">
-                  <Button
+                  <Button 
+                  onClick={() => navigate('/add-item') }
                     variant={"ghost"}
                     className="cursor-pointer border border-pink-400 text-pink-600 hover:text-pink-7 text-xs md:text-sm hover:bg-pink-600/10"
                   >
@@ -121,6 +124,7 @@ function Navbar() {
                 </div>
                 <div className="flex md:hidden justify-baseline md:justify-center items-center gap-1">
                   <Button
+                    onClick={() => navigate('/add-item') }
                     variant={"ghost"}
                     className="cursor-pointer border border-pink-400 text-pink-600 hover:text-pink-7 text-xs md:text-sm hover:bg-pink-600/10"
                   >

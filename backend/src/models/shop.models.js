@@ -12,7 +12,7 @@ const shopSchema = new Schema({
     },
     shopOwner : {
         type : mongoose.Schema.Types.ObjectId,
-        req : 'User',
+        ref : 'User',
         required : true
     },
     shopCity : {

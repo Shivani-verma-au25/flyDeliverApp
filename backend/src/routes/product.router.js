@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import { addProducts, editProduct } from '../controllers/product.controller';
+import { addProducts, editProduct } from '../controllers/product.controller.js';
 import {isAuth} from '../middlewares/isAuth.js'
 import {upload } from '../middlewares/multer.middleware.js'
 
