@@ -81,7 +81,7 @@ export const addProducts = asyncHandler(async (req, res) => {
 export const editProduct = asyncHandler(async (req, res) => {
   try {
     // product id
-    const { productId } = req.params;
+    const { getId } = req.params;
     const { name, category, price, foodType } = req.body;
     // validation
     if (
@@ -99,7 +99,7 @@ export const editProduct = asyncHandler(async (req, res) => {
     }
 
     // find product
-    const product = await Product.findById(productId);
+    const product = await Product.findById(getId);
     if (!product) {
       return res.status(404).json({
         success: false,
@@ -124,7 +124,7 @@ export const editProduct = asyncHandler(async (req, res) => {
     // find and update product
 
     const updatedProduct = await Product.findByIdAndUpdate(
-      productId,
+      getId,
       {
         name,
         category,
@@ -155,3 +155,44 @@ export const editProduct = asyncHandler(async (req, res) => {
     });
   }
 });
+
+
+
+// get product by id
+
+export const getItemById = asyncHandler(async (req, res) => {
+  try {
+    const getId = req.params.getId;
+    
+    if(!getId){
+      return res.status(404).json({
+        success :false,
+        message :"Product id is required!"
+      })
+    }
+  
+    const product = await Product.findById(getId);
+    if(!product){
+      return res.status(404).json({
+        success : false,
+        message : "Product not found!"
+      })
+    }
+    
+    return res.status(200).json({
+      success : true,
+      message : "Prodcut Fetched successfully!",
+      product
+    })
+  } catch (error) {
+    console.log("Error in getItem by id controller" , error)
+    return res.status(500).json({
+      success : false,
+      message : "Failed to get product!",
+      error : error.message,
+    });
+    
+  }
+
+
+})

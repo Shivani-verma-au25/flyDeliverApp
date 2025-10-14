@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 function OwnerProductItemsCard({ item, ind }) {
   const navigate = useNavigate()
   
+  
   return (
     <Card
       key={ind}

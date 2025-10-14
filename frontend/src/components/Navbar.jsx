@@ -172,9 +172,11 @@ function Navbar() {
             <p className="font-semibold text-sm  py-1">
               {userData?.user.fullname}
             </p>
-            <p className="font-semibold text-sm md:hidden py-1 text-pink-600">
+            {userData?.role == 'user' && (
+              <p className="font-semibold text-sm md:hidden py-1 text-pink-600">
               My orders
             </p>
+            )}
             <div
               onClick={handleSignOut}
               className="text-pink-600 font-semibold text-sm cursor-pointer"

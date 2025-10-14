@@ -79,7 +79,7 @@ function OwnerDashboard() {
                 <div className="flex flex-col items-center gap-4 w-full max-w-3xl " >
                     {/* image */}
                     {myShopData?.items.map((item) => (
-                      <OwnerProductItemsCard item={item} key={item.id} />
+                      <OwnerProductItemsCard item={item} key={item._id} />
                     ))}
                 </div>
               ) : (

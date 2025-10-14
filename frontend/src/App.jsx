@@ -29,8 +29,8 @@ function App() {
       <Route path='/forget-password' element={ !userData ? <ForgetPassword /> : <Navigate  to={'/signin'}/>} />
       <Route path='/' element={ userData ? <Home /> : <Navigate to={'/signin'} />} />
       <Route path='/create-edit-shop' element={ userData ? <CreateEditShop /> : <Navigate to={'/signin'} />} />
-      <Route path='/add-item' element={ userData ? <AddItems /> : <Navigate to={'/signin'} />} />
-      <Route path='/edit-product/:productId' element={ userData ? <EditItem /> : <Navigate to={'/signin'} />} />
+      <Route path='/add-item/' element={ userData ? <AddItems /> : <Navigate to={'/signin'} />} />
+      <Route path='/edit-product/:getId' element={ userData ? <EditItem /> : <Navigate to={'/signin'} />} />
     </Routes>
     <Toaster/>
     </div>

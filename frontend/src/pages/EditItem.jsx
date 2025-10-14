@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AxiosInstance } from "@/utils/axios";
 import { CornerDownLeft, Loader2, Utensils } from "lucide-react";
 import { Label } from "@radix-ui/react-label";
@@ -22,15 +22,16 @@ import { setLoading, setMyShopData } from "@/redux/ownerSlice";
 
 function EditItem() {
   useGetCurrentUser();
-  // calling hook for data
   useGetShop();
+  const {getId} = useParams();
+  const dispatch = useDispatch();
+  
+  // calling hook for data
 
   const navigate = useNavigate();
   // getting data from redux
   const { myShopData, loading } = useSelector((state) => state.owner);
- 
-  
-  const dispatch = useDispatch();
+
 
   // for images
   const [backendImage, setBackendImage] = useState(null);
@@ -38,41 +39,42 @@ function EditItem() {
   // for categories
   const [selcetCategory, setSelectCategory] = useState("");
   const [selectFoodType, setSelectFoodType] = useState("");
+  const [currentProduct, setCurrentProduct] = useState(null);
 
   // categories
-  const categories =  [
-        "Snacks",
-        "Main Courses",
-        "Desserts",
-        "Pizzas",
-        "Burgers",
-        "Sandwiches",
-        "South Indian",
-        "North Indian",
-        "Chinese",
-        "Fast Food",
-        "Others",
-      ]
+  const categories = [
+    "Snacks",
+    "Main Courses",
+    "Desserts",
+    "Pizzas",
+    "Burgers",
+    "Sandwiches",
+    "South Indian",
+    "North Indian",
+    "Chinese",
+    "Fast Food",
+    "Others",
+  ];
   const foodTypes = ["Veg", "Non-Veg"];
 
   // actual fields
   const [formdata, setFormData] = useState({
-    name: myShopData,
-    productImage: "",
-    price: "",
-    category: "",
-    foodType: "",
+    name: currentProduct?.name || "",
+    productImage: currentProduct?.productImage || "",
+    price: currentProduct?.price || "",
+    category: currentProduct?.category || "",
+    foodType: currentProduct?.foodType || "",
   });
 
   // Handle image selection
   const handleImage = (e) => {
     const file = e.target.files[0];
-    console.log("file" ,file);
-    
+    console.log("file", file);
+
     if (!file) return null;
 
     setBackendImage(file);
-    setFormData({...formdata, productImage : URL.createObjectURL(file)})
+    setFormData({ ...formdata, productImage: URL.createObjectURL(file) });
   };
 
   // Handle form submit
@@ -90,18 +92,17 @@ function EditItem() {
         data.append("productImage", backendImage); // actual file upload
       }
 
-      const resp = await AxiosInstance.post("/v1/product/add-product",data,{
-        headers: { "Content-Type": "multipart/form-data" }}
-      );
+      const resp = await AxiosInstance.put(`/v1/product/edit-product/${getId}`,data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       if (resp.data.success) {
-        console.log("product data",resp.data?.shop);
-        dispatch(setMyShopData(resp.data.shop));
+        console.log("product data", resp.data.updatedProduct);
+        dispatch(setMyShopData(resp.data.updatedProduct));
         navigate("/");
-        
+
         toast(resp.data.message);
       }
-
       dispatch(setLoading(false));
     } catch (error) {
       console.error("Error while create a  product items", error);
@@ -109,14 +110,37 @@ function EditItem() {
       dispatch(setLoading(false));
     }
   };
-  // validate fields
-  const isValidate =
-    formdata.name &&
-    formdata.price &&
-    backendImage &&
-    selcetCategory &&
-    selectFoodType;
+  
 
+    useEffect(() => {
+  const getCurrentItem = async () => {
+    try {
+      const resp = await AxiosInstance.get(`/v1/product/get-product/${getId}`);
+      if (resp.data.success) {
+        console.log("data", resp);
+        setCurrentProduct(resp.data.product);
+
+        // prefill the form
+        setFormData({
+          name: resp.data.product.name,
+          productImage: resp.data.product.productImage,
+          price: resp.data.product.price,
+          category: resp.data.product.category,
+          foodType: resp.data.product.foodType,
+        });
+
+        setSelectCategory(resp.data.product.category);
+        setSelectFoodType(resp.data.product.foodType);
+      }
+    } catch (error) {
+      console.log("error getting current item", error);
+    }
+  };
+
+  if (getId) getCurrentItem();
+}, [getId]);
+
+  console.log("current", currentProduct);
 
   return (
     <div className="flex justify-center flex-col items-center min-h-screen bg-gradient-to-br from-pink-100 to-white p-2 sm:px-0">
@@ -135,7 +159,9 @@ function EditItem() {
           <div className="text-3xl font-extrabold text-gray-900">Edit food</div>
         </div>
 
-        <form className="space-y-5" onSubmit={handleSubmitEditAndSave}>
+        <form className="space-y-5" 
+        onSubmit={handleSubmitEditAndSave}
+        >
           <div>
             <Label className="block text-sm font-medium text-gray-700 mb-1">
               Name
@@ -147,7 +173,7 @@ function EditItem() {
                 setFormData({ ...formdata, name: e.target.value })
               }
               type="text"
-              placeholder="Enter shop name"
+              placeholder="Enter food name"
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-600"
             />
           </div>
@@ -225,20 +251,20 @@ function EditItem() {
               onChange={handleImage}
               className="w-full px-4 border text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-600 cursor-pointer"
             />
-            {formdata.productImage && (
+             {formdata.productImage && (
               <div className="mt-4">
                 <img
                   src={formdata.productImage}
                   alt={formdata.name}
                   className="w-full h-48 object-cover rounded-lg border"
                 />
-              </div>
+              </div> 
             )}
           </div>
           <Button
-            disabled={!isValidate || loading}
+            disabled={loading}
             className={`w-full cursor-pointer ${
-              !isValidate || loading ? "cursor-not-allowed" : ""
+               loading ? "cursor-not-allowed" : ""
             }`}
           >
             {loading ? (
