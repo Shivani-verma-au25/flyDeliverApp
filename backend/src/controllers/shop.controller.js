@@ -84,13 +84,13 @@ export const createShopAndEditShop = asyncHandler(async (req, res) => {
 // get shop controller
 
 export const getShop = asyncHandler(async (req, res) => {
-  const shop = await Shop.findOne({ shopOwner: req.user._id }) .populate({
+  const shop = await Shop.findOne({ shopOwner: req.user._id }).populate({
       path: "items",
       select: "name category price foodType productImage createdAt updatedAt",
-    })
+    }).populate('shopOwner')
     .populate({
-      path: "shopOwner",
-      select: "fullname email mobile",
+      path: "items",
+      options : {sort : {updatedAt : -1}}
     });
 
   if (!shop) {

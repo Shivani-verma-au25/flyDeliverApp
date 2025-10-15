@@ -9,10 +9,25 @@ import {
 import { Button } from "@/components/ui/button";
 import { Pen, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { AxiosInstance } from "@/utils/axios";
+import { useDispatch, useSelector } from "react-redux";
+import { setMyShopData } from "@/redux/ownerSlice";
+import { toast } from "sonner";
 
 function OwnerProductItemsCard({ item, ind }) {
-  const navigate = useNavigate()
   
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+
+  const handleDelete = async () => {
+    try {
+      const resp = await AxiosInstance.delete(`/v1/product/delete-product/${item._id}`);            
+      dispatch(setMyShopData(resp.data.shop))
+      toast.success(resp.data?.message)
+    } catch (error) {
+      console.log("error in delete handler",error);
+    }
+  }
   
   return (
     <Card
@@ -63,7 +78,7 @@ function OwnerProductItemsCard({ item, ind }) {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => onDelete && onDelete(item._id)}
+          onClick={() => handleDelete() }
           className="hover:bg-red-100 rounded-full transition-all cursor-pointer"
         >
           <Trash2 className="size-5 text-red-600" />
