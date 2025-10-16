@@ -18,7 +18,7 @@ export const uploadnCloudinary = async (filePath) => {
         const repsonse = await cloudinary.uploader.upload(filePath , {
             resource_type : 'auto'
         })
-        console.log("uploaded file" , repsonse);
+        // console.log("uploaded file" , repsonse);
         fs.unlinkSync(filePath);
         // return repsonse.secure_url;
         return repsonse;

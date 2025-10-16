@@ -27,7 +27,7 @@ function Navbar() {
   const navigate = useNavigate()
   const { userData, currentCity } = useSelector((state) => state.user);
   const { myShopData } = useSelector((state) => state.owner);
-  // console.log("user data", myShopData);
+  // console.log("user data",);
 
   const handleSignOut = async () => {
     try {
@@ -172,7 +172,7 @@ function Navbar() {
             <p className="font-semibold text-sm  py-1">
               {userData?.user.fullname}
             </p>
-            {userData?.role == 'user' && (
+            {userData.user?.role == 'user' && (
               <p className="font-semibold text-sm md:hidden py-1 text-pink-600">
               My orders
             </p>
