@@ -24,7 +24,7 @@ import { useNavigate } from "react-router-dom";
 
 function Navbar() {
   const dispatch = useDispatch();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { userData, currentCity } = useSelector((state) => state.user);
   const { myShopData } = useSelector((state) => state.owner);
   // console.log("user data",);
@@ -113,8 +113,8 @@ function Navbar() {
             {myShopData && (
               <>
                 <div className="hidden md:flex justify-baseline md:justify-center items-center">
-                  <Button 
-                  onClick={() => navigate('/add-item') }
+                  <Button
+                    onClick={() => navigate("/add-item")}
                     variant={"ghost"}
                     className="cursor-pointer border border-pink-400 text-pink-600 hover:text-pink-7 text-xs md:text-sm hover:bg-pink-600/10"
                   >
@@ -124,7 +124,7 @@ function Navbar() {
                 </div>
                 <div className="flex md:hidden justify-baseline md:justify-center items-center gap-1">
                   <Button
-                    onClick={() => navigate('/add-item') }
+                    onClick={() => navigate("/add-item")}
                     variant={"ghost"}
                     className="cursor-pointer border border-pink-400 text-pink-600 hover:text-pink-7 text-xs md:text-sm hover:bg-pink-600/10"
                   >
@@ -137,7 +137,7 @@ function Navbar() {
               <Receipt className="text-pink-600" />
               <span>Pending Orders</span>
               <span className="absolute -top-3 -right-2 bg-pink-500 w-4 h-4 text-white rounded-full flex justify-center items-center">
-                0 
+                0
               </span>
             </div>
 
@@ -149,8 +149,7 @@ function Navbar() {
               </span>
             </div>
           </>
-        ) 
-        : (
+        ) : (
           <>
             <Button
               variant={"outline"}
@@ -172,10 +171,16 @@ function Navbar() {
             <p className="font-semibold text-sm  py-1">
               {userData?.user.fullname}
             </p>
-            {userData.user?.role == 'user' && (
-              <p className="font-semibold text-sm md:hidden py-1 text-pink-600">
-              My orders
-            </p>
+            {userData.user?.role == "user" && (
+              <p
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate("/my-orders");
+                }}
+                className="font-semibold text-sm md:hidden py-1 text-pink-600"
+              >
+                My orders
+              </p>
             )}
             <div
               onClick={handleSignOut}
