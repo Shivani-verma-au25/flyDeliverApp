@@ -16,6 +16,8 @@ import EditItem from './pages/EditItem'
 function App() {
   useGetCity() 
   useGetCurrentUser()
+  
+
 
   const {userData} = useSelector((state) => state.user)
 

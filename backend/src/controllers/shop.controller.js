@@ -34,7 +34,9 @@ export const createShopAndEditShop = asyncHandler(async (req, res) => {
     }
 
     // check if shop already exists
-    const existedShop = await Shop.findOne({ shopOwner: req.user._id }).populate('name');
+    const existedShop = await Shop.findOne({
+      shopOwner: req.user._id,
+    }).populate("name");
 
     let shop;
     if (!existedShop) {
@@ -60,7 +62,7 @@ export const createShopAndEditShop = asyncHandler(async (req, res) => {
           ...(shopPic && { shopImage: shopPic }),
         },
         { new: true }
-      ).populate('shopOwner items');
+      ).populate("shopOwner items");
     }
 
     return res.status(200).json({
@@ -84,13 +86,15 @@ export const createShopAndEditShop = asyncHandler(async (req, res) => {
 // get shop controller
 
 export const getShop = asyncHandler(async (req, res) => {
-  const shop = await Shop.findOne({ shopOwner: req.user._id }).populate({
-      path: "items",
-      select: "name category price foodType productImage createdAt updatedAt",
-    }).populate('shopOwner')
+  const shop = await Shop.findOne({ shopOwner: req.user._id })
     .populate({
       path: "items",
-      options : {sort : {updatedAt : -1}}
+      select: "name category price foodType productImage createdAt updatedAt",
+    })
+    .populate("shopOwner")
+    .populate({
+      path: "items",
+      options: { sort: { updatedAt: -1 } },
     });
 
   if (!shop) {
@@ -106,3 +110,34 @@ export const getShop = asyncHandler(async (req, res) => {
     shop,
   });
 });
+
+// get shop by city
+
+export const getShopByCity = asyncHandler(async (req, res) => {
+  try {
+    const { city } = req.params;
+
+    const shops = await Shop.find({
+      shopCity: { $regex: new RegExp(`^${city}$`, "i") },
+    }).populate("items");
+
+    if (!shops || shops.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No shops found in this city!",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      shops,
+    });
+  } catch (error) {
+    console.log("Error finding shop by city:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error getting shops by city!",
+    });
+  }
+});
+

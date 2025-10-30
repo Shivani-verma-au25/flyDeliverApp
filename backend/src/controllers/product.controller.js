@@ -261,3 +261,49 @@ export const deleteProduct = asyncHandler(async (req, res) => {
     });
   }
 });
+
+
+// get food items by city
+
+export const getFoodItemsByCity = asyncHandler( async (req ,res) => {
+  try {
+    const {city} = req.params;
+    console.log("city" ,city);
+    
+    if(!city){
+      return res.status(400).json({
+        success : false,
+        message : "City is required!"
+      })
+    }
+
+    const shops = await Shop.find({
+      shopCity : {$regex : new  RegExp(`^${city}$` ,'i')}
+    }).populate('items')
+
+    if(!shops){
+      return res.status(400).json({
+        success : false,
+        message : "Shop not found"
+      })
+    }
+
+    const shopIds =  shops.map((shop) => shop._id)
+    // find items related to the shop id's
+    const items = await Product.find({shop: {$in : shopIds}})
+
+    return res.status(200).json({
+      success : true,
+      message : "Getting food items",
+      items
+    })
+
+  } catch (error) {
+    console.log("error in getting food items in related to the shop",error);
+    return res.status(500).json({
+      success : false,
+      message : "Failed to get food items!"
+    })
+    
+  }
+})
