@@ -268,7 +268,6 @@ export const deleteProduct = asyncHandler(async (req, res) => {
 export const getFoodItemsByCity = asyncHandler( async (req ,res) => {
   try {
     const {city} = req.params;
-    console.log("city" ,city);
     
     if(!city){
       return res.status(400).json({

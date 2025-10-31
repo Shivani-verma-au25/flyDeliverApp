@@ -5,10 +5,15 @@ import { FaStairs, FaStar } from "react-icons/fa6";
 import { CiStar } from "react-icons/ci";
 import { data } from 'react-router-dom';
 import { Button } from './ui/button';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from '@/redux/userSlice';
 
 
 
 function FoodCard({food}) {
+  
+  const disptach = useDispatch()
+  const {cartItems} = useSelector((state) => state.user); 
   const [quantity ,setQuantity] = useState(0)
     const renderRatingStars = (rating) => {
       const stars = [];
@@ -31,9 +36,9 @@ function FoodCard({food}) {
       }
     }
   return (
-    <Card className='w-64 rounded-2xl border-2 border-pink-600 bg-white shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col'>
+    <Card className='w-64 rounded-2xl border-2 text-gray-500 bg-white shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col'>
         <div className='relative w-full h-44 flex justify-center items-center bg-white'>
-            <div className='absolute z-50 top-1  right-1 p-1 rounded-full shadow'>{food.foodType === 'Veg' ? <LeafyGreen className='bg-green-600 rounded-full  text-black p-0.5' /> : <Drumstick className='bg-red-600 rounded-full text-black p-0.5' />}</div>
+            <div className='absolute z-50 top-1  right-1 p-1 rounded-full shadow'>{food.foodType === 'Veg' ? <LeafyGreen className='bg-green-600 rounded-full  text-white p-0.5' /> : <Drumstick className='bg-red-600 rounded-full text-white p-0.5' />}</div>
             <img 
             className='w-full h-full object-cover transition-transform duration-300 hover:scale-105 cursor-pointer'
             src={food.productImage} alt="product Image" />
@@ -59,12 +64,22 @@ function FoodCard({food}) {
                 <span className='px-2' >{quantity}</span>
                 <Button
                 onClick={handleIncrease} 
-                variant={'ghost'} className='cursor-pointer '  ><Plus /></Button>
-                <Button><ShoppingCartIcon size={16} /></Button>
+                variant={'ghost'} className='cursor-pointer'><Plus/></Button>
+                <Button 
+                disabled={quantity === 0}
+                className={`${cartItems.some((i) => i.id === food._id) ? 'bg-gray-900 ' : 'bg-pink-600' } 'bg-pink-600`}
+                onClick={() => quantity >0 ? disptach(addToCart({ 
+                  id:food._id,
+                  name:food.name,
+                  price : food.price,
+                  image : food.productImage,
+                  shop : food.shop,
+                  quantity,
+                  foodType : food.foodType
+                })) : null } 
+                 ><ShoppingCartIcon size={16} /></Button>
               </div>
             </div>
-
-            
 
         </div>
     </Card>

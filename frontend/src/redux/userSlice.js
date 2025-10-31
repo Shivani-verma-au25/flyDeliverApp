@@ -11,6 +11,7 @@ const useSlice = createSlice({
         currentAddress : null,
         shopsInMyCity : null,
         foodItemsMyCity : null,
+        cartItems : []
     },
 
     reducers : {
@@ -36,11 +37,24 @@ const useSlice = createSlice({
         },
         setFoodItems : (state ,action) => {
             state.foodItemsMyCity = action.payload;
+        },
+        addToCart : (state ,action) =>{
+            const cartItem = action.payload;
+            console.log("cartIem from useslice" ,cartItem);
+            
+            // find existing item
+            const exitingItem = state.cartItems.find((item) => item.id === cartItem.id);
+            if (exitingItem) {
+                exitingItem.quantity += cartItem.quantity; // updating product quantity
+            }else{
+                state.cartItems.push(cartItem)
+            }
+
         }
     }
 
 })
 
 
-export const {setLoading ,setUserData ,setCurrentState , setCurrentCity,setCurrentAddress, setshopsInMyCity ,setFoodItems} = useSlice.actions;
+export const {setLoading ,setUserData ,setCurrentState , setCurrentCity,setCurrentAddress, setshopsInMyCity ,setFoodItems ,addToCart} = useSlice.actions;
 export default useSlice.reducer;
