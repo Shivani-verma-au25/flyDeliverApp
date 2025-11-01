@@ -100,7 +100,9 @@ function Navbar() {
         )}
 
         {userData?.user?.role === "user" && (
-          <div className="relative cursor-pointer">
+          <div 
+          onClick={() => navigate('/cart')}
+          className="relative cursor-pointer">
             <ShoppingCart className="size-7 text-pink-600" />{" "}
             <span className="absolute right-0 -top-3 text-pink-600">{cartItems.length>0 ? cartItems.length : 0}</span>
           </div>

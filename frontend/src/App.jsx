@@ -12,6 +12,8 @@ import useGetCity from './hooks/useGetCity'
 import CreateEditShop from './pages/CreateEditShop'
 import AddItems from './pages/AddItems'
 import EditItem from './pages/EditItem'
+import CartPage from './pages/CartPage'
+import CheckOut from './pages/CheckOut'
 
 function App() {
   useGetCity() 
@@ -33,6 +35,8 @@ function App() {
       <Route path='/create-edit-shop' element={ userData ? <CreateEditShop /> : <Navigate to={'/signin'} />} />
       <Route path='/add-item/' element={ userData ? <AddItems /> : <Navigate to={'/signin'} />} />
       <Route path='/edit-product/:getId' element={ userData ? <EditItem /> : <Navigate to={'/signin'} />} />
+      <Route path='/cart' element={ userData ? <CartPage />  : <Navigate to={'/signin'} />} />
+      <Route path='/checkout' element={ userData ? <CheckOut />  : <Navigate to={'/signin'} />} />
     </Routes>
     <Toaster/>
     </div>

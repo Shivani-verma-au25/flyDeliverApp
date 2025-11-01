@@ -11,7 +11,8 @@ const useSlice = createSlice({
         currentAddress : null,
         shopsInMyCity : null,
         foodItemsMyCity : null,
-        cartItems : []
+        cartItems : [],
+        totalAmount : 0,
     },
 
     reducers : {
@@ -49,6 +50,31 @@ const useSlice = createSlice({
             }else{
                 state.cartItems.push(cartItem)
             }
+            // total amount
+
+            state.totalAmount = state.cartItems.reduce((sum ,i) => sum + i.price * i.quantity , 0);
+
+
+        },
+
+        updateQantity : (state ,action) =>{
+            const {id , quantity} = action.payload;
+            const item = state.cartItems.find((i) => i.id === id);
+            if(item){
+                item.quantity = quantity;
+            }
+            // total amount updating 
+            state.totalAmount = state.cartItems.reduce((sum ,i) => sum + i.price * i.quantity , 0);
+        },
+
+        removeCartItem : (state ,action) =>{
+            const deletItemId = action.payload; // gives id of deleting prodcut
+
+            // filtering the  payload  : if payloads id is not equal to cartitems id return all item accept matching  // ist when its match
+            state.cartItems = state.cartItems.filter((i) => i.id !== deletItemId) 
+            // total amount
+            state.totalAmount = state.cartItems.reduce((sum ,i) => sum + i.price * i.quantity , 0);
+
 
         }
     }
@@ -56,5 +82,5 @@ const useSlice = createSlice({
 })
 
 
-export const {setLoading ,setUserData ,setCurrentState , setCurrentCity,setCurrentAddress, setshopsInMyCity ,setFoodItems ,addToCart} = useSlice.actions;
+export const {setLoading ,setUserData ,setCurrentState , setCurrentCity,setCurrentAddress, setshopsInMyCity ,setFoodItems ,addToCart ,updateQantity , removeCartItem} = useSlice.actions;
 export default useSlice.reducer;
